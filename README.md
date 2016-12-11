@@ -7,9 +7,9 @@ Suricata must be installed on the target host to be able to sniff the network.
 The Snorby UI and its stacks are running in docker containers.
 
 The Snorby stack is composed of 3 containers:
-- a mysql database server
-- banyard2 that is reading the suricata events and send it to mysql
-- snorby a web interface displaying events from the mysql database
+- banyard2 that parse suricata events and send them into the database.
+- snorby a web interface displaying events from the database.
+- a mysql database server to store events.
 
 This installation is only for testing/learning purpose and should not be used in production.
 
@@ -52,7 +52,6 @@ Tested successfuly on ubuntu 14.04 with the following version:
 ```
 sudo mkdir /opt/ids-data
 ```
-
 2. Configure suricata to produce some events, editing `/etc/suricata/suricata.yaml`
    
    - check that unified2 is enabled to produce readable data for banyard2
@@ -60,9 +59,14 @@ sudo mkdir /opt/ids-data
    - the capture is on the expected network interface for instance:
 	 `af-packet/interface: wlan1` for the wifi network
    - check the `rule-files` list and add a `test.rules` file with content like:
-	 `alert tcp any any -> any any ( msg: "TCP packet detected!"; sid: 1; rev: 8;)`
+     ```alert tcp any any -> any any ( msg: "TCP packet detected!"; sid: 1; rev: 8;)```
+   - You may need to do a
+```
+sudo touch /var/log/suricata/barnyard2.waldo
+```
 
-   You need to restart the service once the configuration is modified.
+
+You need to restart the service once the configuration is modified.
 
 ## Running
 
@@ -70,7 +74,7 @@ sudo mkdir /opt/ids-data
 
 `sudo service suricata restart`
 
-## Start Snorby stack
+## Snorby stack
 
 From this current directory (where there is a `docker-compose.yml` file), run:
 
@@ -78,7 +82,7 @@ From this current directory (where there is a `docker-compose.yml` file), run:
 
 You should have access to snorby, using the default login/password: snorby@snorby.org / snorby
 
-http://localhost:3000/
+[http://localhost:3000/](http://localhost:3000/)
 
 
 To stop use Ctrl-C or from another terminal:
@@ -94,10 +98,10 @@ docker-compose ps
 # Run a shell on a container:
 docker exec -it mysql bash
 
-# View output of a containre
+# View output of a container:
 docker logs snorby
 
-# Reset a container
+# Reset a container:
 docker-compose rm mysql
 
 ```
