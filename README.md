@@ -97,6 +97,8 @@ docker exec -it mysql bash
 # View output of a containre
 docker logs snorby
 
+# Reset a container
+docker-compose rm mysql
 
 ```
 
