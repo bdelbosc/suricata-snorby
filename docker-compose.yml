@@ -1,0 +1,35 @@
+mysql:
+  image: mysql
+  ports:
+    - "13306:3306"
+  environment:
+    - MYSQL_ROOT_PASSWORD=password
+  volumes:
+    - /opt/ids-data:/var/lib/mysql
+
+snorby:
+  image: polinux/snorby
+  ports:
+    - "3000:3000"
+  links:
+    - mysql
+  environment:
+    - DB_ADDRESS=mysql
+    - DB_USER=root
+    - DB_PASS=password
+
+barnyard2:
+  image: toulet/docker-barnyard2
+  links:
+    - mysql
+  volumes:
+    - /etc/suricata:/etc/suricata
+    - /var/log/suricata:/var/log/suricata
+  environment:
+    - DB_HOST=mysql
+    - DB_USER=root
+    - DB_PASS=password
+    - DB_NAME=snorby
+    - SENSOR_NAME=IDS
+
+
